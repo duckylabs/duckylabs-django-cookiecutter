@@ -1,0 +1,11 @@
+[bandit]
+exclude = ["*/test/*","*/tests/*","*/test.py","*/tests.py","*/migrations/*"]
+exclude_dirs = ["tests", "migrations"]
+tests = ["B201", "B301"]
+skips = ["B101", "B601"]
+
+try_except_continue:
+    check_typed_exception = false
+
+tool.bandit.try_except_pass:
+    check_typed_exception = false

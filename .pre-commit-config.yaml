@@ -1,0 +1,69 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trailing whitespaces
+
+      - id: end-of-file-fixer
+        name: End of file fixer
+
+      - id: check-yaml
+        name: Check yaml files
+        exclude: >
+          (?x)^(
+            | {{cookiecutter.project_slug}}
+          )
+
+  - repo: https://github.com/ambv/black
+    rev: 24.4.2
+    hooks:
+      - id: black
+        language_version: python
+        files: (?x)^.*\/.*\.pyi?$
+        args: [--config=pyproject.toml]
+        exclude: >
+            (?x)^(.*\/migrations\/.*\.py)$|
+            ^(
+                \.git
+              | \.hg
+              | \.mypy_cache
+              | \.tox
+              | \.venv
+              | _build
+              | buck-out
+              | build
+              | dist
+              | blib2to3
+              | {{cookiecutter.project_slug}}/src/apps/core/tests/recipes.py
+              | {{cookiecutter.project_slug}}/src/apps/core/utils.py
+              | {{cookiecutter.project_slug}}/src/apps/core/forms.py
+              | {{cookiecutter.project_slug}}/src/manage.py
+              | {{cookiecutter.project_slug}}/src/{{cookiecutter.project_slug}}/__init__.py
+              | {{cookiecutter.project_slug}}/src/{{cookiecutter.project_slug}}/settings.py
+              | {{cookiecutter.project_slug}}/src/{{cookiecutter.project_slug}}/urls.py
+            )
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.1.0
+    hooks:
+      - id: flake8
+        files: (?x)^.*\/.*\.pyi?$
+        exclude: >
+          (?x)^(
+            | {{cookiecutter.project_slug}}
+          )
+        language_version: python
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: isort (python)
+        exclude: >
+          (?x)^(
+            | {{cookiecutter.project_slug}}
+          )
+        args: [--settings-path=pyproject.toml]

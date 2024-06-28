@@ -1,0 +1,43 @@
+
+FROM python:{{cookiecutter.python_version}}-alpine as builder
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV PYTHONPATH /home/djangouser/app
+
+ENV DJANGO_USER=djangouser
+ENV DJANGO_USER_UID=1000
+ENV DJANGO_USER_GID=1000
+
+RUN addgroup --gid "$DJANGO_USER_GID" "$DJANGO_USER" \
+  && adduser --disabled-password --gecos "" --home "/home/djangouser" --ingroup "$DJANGO_USER" --uid "$DJANGO_USER_UID" $DJANGO_USER \
+  && apk update && apk --no-cache --update add \
+      build-base \
+      libpq-dev \
+      gettext
+
+
+USER djangouser
+WORKDIR /home/djangouser/app
+
+USER root
+
+COPY --chown=${DJANGO_USER_UID}:${DJANGO_USER_GID} ./.docker/entrypoint-alpine.sh /entrypoint.sh
+COPY --chown=${DJANGO_USER_UID}:${DJANGO_USER_GID} ./.docker/dev /usr/local/bin/dev
+
+RUN chmod +x /entrypoint.sh && chmod +x /usr/local/bin/dev
+
+COPY --chown=${DJANGO_USER_UID}:${DJANGO_USER_GID} requirements.txt requirements.txt
+RUN pip install -U pip && pip install --no-cache-dir -r requirements.txt
+
+
+FROM builder
+
+USER djangouser
+WORKDIR /home/djangouser/app
+
+COPY --chown=${DJANGO_USER_UID}:${DJANGO_USER_GID} . .
+
+EXPOSE 8000
+
+ENTRYPOINT [ "/entrypoint.sh" ]

@@ -1,0 +1,34 @@
+{
+    "project_name": "My awsome project",
+    "project_slug": "{{ cookiecutter.project_name.lower()|replace(' ', '')|replace('-', '_')|replace('.', '_')|trim() }}",
+    "project_description": "{{cookiecutter.project_name}} description",
+    "author_name": "Jhon Doe",
+    "email": "jhon.doe@gmail.com",
+    "version": "0.1.0",
+    "timezone": "America/Mexico_City",
+    "python_version": [
+        "3.12",
+        "3.11",
+        "3.10",
+        "3.9"
+    ],
+    "postgresql_version": [
+        "16",
+        "15",
+        "14",
+        "13",
+        "12",
+        "11",
+        "10"
+    ],
+    "django_running_port": "8000",
+    "nginx_running_port": "8888",
+    "use_mailhog": "y",
+    "use_restframework": "y",
+    "use_debugpy": "y",
+    "use_waffle_flags": "y",
+    "use_celery": "y",
+    "use_redis": "y",
+    "use_django_recaptcha": "y",
+    "use_aws_media_files": "y"
+}

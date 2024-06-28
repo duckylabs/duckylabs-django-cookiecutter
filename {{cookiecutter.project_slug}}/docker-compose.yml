@@ -1,0 +1,300 @@
+version: "3"
+
+services:
+
+  webserver:
+    image: nginx:stable-alpine
+    container_name: webserver
+    ports:
+      - '{{cookiecutter.nginx_running_port}}:80'
+    volumes:
+      - './.docker/config/nginx.conf:/etc/nginx/conf.d/default.conf'
+      - ./src/staticfiles/:/static/
+    depends_on:
+      backend-prod:
+        condition: service_started
+
+  backend-prod:
+    image: {{cookiecutter.project_slug}}-backend:prod
+    container_name: {{cookiecutter.project_slug}}-backend-prod
+    build:
+      dockerfile: .docker/Dockerfile.prod
+      context: .
+    command: run
+    env_file:
+      - ./.env
+    environment:
+      - DJANGO_DEBUG=False
+    depends_on:
+      {%- if cookiecutter.use_redis == 'y' %}
+      redis:
+        condition: service_healthy
+      {%- endif %}
+      database:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      jupyterlab:
+        condition: service_started
+      {%- if cookiecutter.use_mailhog == 'y' %}
+      mailhog:
+        condition: service_started
+      {%- endif %}
+      celery-worker:
+        condition: service_started
+      celery-worker-high-priority:
+        condition: service_started
+      celery-worker-low-priority:
+        condition: service_started
+      celery-flower:
+        condition: service_started
+      celery-beat:
+        condition: service_started
+
+  backend:
+    image: {{cookiecutter.project_slug}}-backend:dev
+    container_name: {{cookiecutter.project_slug}}-backend-dev
+    build:
+      dockerfile: .docker/Dockerfile
+      context: .
+    command: devserver
+    env_file:
+      - ./.env
+    volumes:
+      - ./:/home/djangouser/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      {%- if cookiecutter.use_redis == 'y' %}
+      redis:
+        condition: service_healthy
+      {%- endif %}
+      database:
+        condition: service_healthy
+      jupyterlab:
+        condition: service_started
+      {%- if cookiecutter.use_mailhog == 'y' %}
+      mailhog:
+        condition: service_started
+      {%- endif %}
+      {% if cookiecutter.use_celery == 'y' -%}
+      rabbitmq:
+        condition: service_healthy
+      celery-worker:
+        condition: service_started
+      celery-worker-high-priority:
+        condition: service_started
+      celery-worker-low-priority:
+        condition: service_started
+      celery-flower:
+        condition: service_started
+      celery-beat:
+        condition: service_started
+      {%- endif %}
+
+  database:
+    image: postgres:{{cookiecutter.postgresql_version}}-alpine
+    container_name: {{cookiecutter.project_slug}}-postgres
+    environment:
+      - POSTGRES_USER={{cookiecutter.project_slug}}
+      - POSTGRES_DB={{cookiecutter.project_slug}}
+      - POSTGRES_PASSWORD={{cookiecutter.project_slug}}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "{{cookiecutter.project_slug}}"]
+      interval: 5s
+      retries: 10
+
+  jupyterlab:
+    image: {{cookiecutter.project_slug}}-backend:dev
+    container_name: {{cookiecutter.project_slug}}-jupyterlab
+    build:
+      dockerfile: ./.docker/Dockerfile
+      context: .
+    command: jupyterlab
+    ports:
+      - '8001:8001'
+    env_file:
+      - .env
+    environment:
+      - DJANGO_ALLOW_ASYNC_UNSAFE=True
+    volumes:
+      - ./:/home/djangouser/app
+    depends_on:
+      {%- if cookiecutter.use_redis == 'y' %}
+      redis:
+        condition: service_healthy
+      {%- endif %}
+      database:
+        condition: service_healthy
+      {%- if cookiecutter.use_mailhog == 'y' %}
+      mailhog:
+        condition: service_started
+      {%- endif %}
+      {% if cookiecutter.use_celery == 'y' -%}
+      rabbitmq:
+        condition: service_healthy
+      celery-worker:
+        condition: service_started
+      celery-worker-high-priority:
+        condition: service_started
+      celery-worker-low-priority:
+        condition: service_started
+      celery-flower:
+        condition: service_started
+      celery-beat:
+        condition: service_started
+      {%- endif %}
+  {% if cookiecutter.use_redis == 'y' %}
+  redis:
+    image: redis:alpine
+    container_name: {{cookiecutter.project_slug}}-redis
+    expose:
+      - 6379
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 30s
+      retries: 50
+  {%- endif %}
+  {% if cookiecutter.use_mailhog == 'y' %}
+  mailhog:
+    image: mailhog/mailhog
+    container_name: {{cookiecutter.project_slug}}-mailhog
+    command: -jim-accept=0.8 -jim-disconnect=0.2
+    ports:
+      - '1025:1025' # smtp server
+      - '8002:8025' # web ui
+  {%- endif %}
+  {% if cookiecutter.use_celery == 'y' %}
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: '{{cookiecutter.project_slug}}-rabbitmq'
+    ports:
+        - "5672:5672"
+        - "8004:15672"
+    volumes:
+        - .docker/data/rabbitmq/data/:/var/lib/rabbitmq
+        - .docker/data/rabbitmq/logs/:/var/log/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
+  celery-flower:
+    image: {{cookiecutter.project_slug}}-backend:dev
+    container_name: {{cookiecutter.project_slug}}-flower
+    command: celery_flower
+    env_file:
+      - .env
+    ports:
+      - "8003:5555"
+    volumes:
+      - ./:/home/djangouser/app
+    depends_on:
+      {%- if cookiecutter.use_redis == 'y' %}
+      redis:
+        condition: service_healthy
+      {%- endif %}
+      database:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  celery-worker:
+    image: {{cookiecutter.project_slug}}-backend:dev
+    container_name: {{cookiecutter.project_slug}}-worker
+    command: celery_worker
+    env_file:
+      - .env
+    environment:
+      - QUEUE_NAMES=default
+      - CELERY_MAX_CONCURRENCY=4
+      - CELERY_AUTOSCALE=4,2
+      - CELERY_WORKER_NAME=worker@default
+    volumes:
+      - ./:/home/djangouser/app
+    depends_on:
+      {%- if cookiecutter.use_redis == 'y' %}
+      redis:
+        condition: service_healthy
+      {%- endif %}
+      database:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  celery-worker-low-priority:
+    image: {{cookiecutter.project_slug}}-backend:dev
+    container_name: {{cookiecutter.project_slug}}-worker-low-priority
+    command: celery_worker
+    env_file:
+      - .env
+    environment:
+      - QUEUE_NAMES=low_priority
+      - CELERY_MAX_CONCURRENCY=2
+      - CELERY_AUTOSCALE=2,1
+      - CELERY_WORKER_NAME=worker@low_priotiry
+    volumes:
+      - ./:/home/djangouser/app
+    depends_on:
+      {%- if cookiecutter.use_redis == 'y' %}
+      redis:
+        condition: service_healthy
+      {%- endif %}
+      database:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  celery-worker-high-priority:
+    image: {{cookiecutter.project_slug}}-backend:dev
+    container_name: {{cookiecutter.project_slug}}-worker-high-priority
+    command: celery_worker
+    env_file:
+      - .env
+    environment:
+      - QUEUE_NAMES=high_priority
+      - CELERY_MAX_CONCURRENCY=8
+      - CELERY_AUTOSCALE=8,4
+      - CELERY_WORKER_NAME=worker@high_priotiry
+    volumes:
+      - ./:/home/djangouser/app
+    depends_on:
+      {%- if cookiecutter.use_redis == 'y' %}
+      redis:
+        condition: service_healthy
+      {%- endif %}
+      database:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  celery-beat:
+    image: {{cookiecutter.project_slug}}-backend:dev
+    container_name: {{cookiecutter.project_slug}}-celery-beat
+    command: celery_beat
+    env_file:
+      - .env
+    volumes:
+      - ./:/home/djangouser/app
+    depends_on:
+      {%- if cookiecutter.use_redis == 'y' %}
+      redis:
+        condition: service_healthy
+      {%- endif %}
+      database:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+  {%- endif %}
+
+volumes:
+  db:
+    driver: local

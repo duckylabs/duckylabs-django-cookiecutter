@@ -1,0 +1,67 @@
+#!/usr/bin/env sh
+set -euo pipefail
+
+show_usage() {
+  echo "Run Django"
+  echo "    run               Starts the jango development server."
+  echo "    shell             Run the shell_plus django command from django-extensions package."
+  echo ""
+  echo "Test and coverage"
+  echo "    test              Run tests using pytest command."
+  echo "    coverage          Run tests using coverage package with HTML output."
+  echo "    pycoverage        Run tests using pytest-cov package with Console output."
+  echo ""
+  echo "Migrations"
+  echo "    makemigrations    Run makemigrations django command."
+  echo "    migrate           Run migrate django command."
+  echo ""
+  echo "Localization and Internationalization"
+  echo "    makemessages      Create/Update the po files for defined languages."
+  echo "    compilemessages   Compile the languange translation files."
+  exit 1
+}
+
+arg=${1:-}
+shift || show_usage
+
+case ${arg} in
+run)
+  python -Xfrozen_modules=off manage.py runserver 0.0.0.0:{{cookiecutter.django_running_port}} "$@"
+;;
+test)
+  python -m pytest --config-file=../pyporject.toml -v -l --failed-first "$@"
+;;
+coverage)
+  set +euo pipefail
+  rm -rf ../coverage_results
+  mkdir -p ../coverage_results
+  python -m coverage erase --rcfile ../pyproject.toml
+  python -m coverage run  --branch --rcfile ../pyproject.toml -m pytest -v -l "$@"
+  python -m coverage combine --rcfile ../pyproject.toml
+  python -m coverage html --rcfile ../pyproject.toml -d ../coverage_results/coverage
+  python -m coverage xml --rcfile ../pyproject.toml -o ../coverage.xml
+  set -euo pipefail
+  python -m coverage report --rcfile ../pyproject.toml -m
+;;
+shell)
+  python manage.py shell_plus "$@"
+;;
+pycoverage)
+  python -m pytest --config-file=../pyproject.toml --cov --cov-report=term-missing --cov-config ../pyproject.toml -v "$@"
+;;
+makemigrations)
+  python manage.py makemigrations "$@"
+;;
+migrate)
+  python manage.py migrate "$@"
+;;
+makemessages)
+  python manage.py makemessages  --no-location "$@"
+;;
+compilemessages)
+  python manage.py compilemessages "$@"
+;;
+*)
+  show_usage
+;;
+esac

@@ -1,0 +1,64 @@
+
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+default_language_version:
+  python: python3
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trailing whitespaces
+
+      - id: end-of-file-fixer
+        name: End of file fixer
+
+      - id: check-yaml
+        name: Check yaml files
+
+      - id: check-merge-conflict
+        name: Check merge conflicts
+
+      - id: name-tests-test
+        name: Check tests names
+        exclude: (?x)^(.*\/(conftest|baker_recipes|fixtures)\.py)$
+        args: ['--pytest-test-first']
+
+      - id: detect-private-key
+        name: Detecting private keys
+
+  - repo: local
+    hooks:
+      - id: forbidden-statements-checker
+        name: Checking forbidden statements
+        description: Check Python files for forbidden statements
+        entry: python scripts/statements_checker.py
+        files: .*\.py$
+        exclude: ^scripts\/.*\.py$
+        language: python
+
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.2.2
+    hooks:
+      - id: ruff
+        name: Running Ruff Linter
+        args: [ --fix ]
+        files: (?x)^.*\/.*\.pyi?$
+        language_version: python
+
+      - id: ruff-format
+        name: Running Ruff Formatter
+        files: (?x)^.*\/.*\.pyi?$
+        language_version: python
+
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.7
+    hooks:
+    - id: bandit
+      name: Running bandit
+      files: apps
+      language_version: python
+      exclude: ^(.*/test/.*|.*/tests/.*|.*/test\.py|.*/tests\.py|.*/migrations/.*)$
