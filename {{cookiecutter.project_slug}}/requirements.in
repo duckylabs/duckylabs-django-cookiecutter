@@ -1,29 +1,29 @@
 arrow>=1.3.0
-boto3>=1.34.135
+boto3>=1.38.41
 {%- if cookiecutter.use_celery == 'y' %}
-celery>=5.4.0
+celery>=5.5.3
 {%- endif %}
-Django>=5.0.6,<=5.1
-django-extensions>=3.2.3
+Django>=5.2.3,<=5.3
+django-extensions>=4.1
 {%- if cookiecutter.use_django_recaptcha == 'y' %}
-django-recaptcha>=4.0.0
+django-recaptcha>=4.1.0
 {%- endif %}
 {%- if cookiecutter.use_redis == 'y' %}
-redis>=5.0.7
-hiredis>=2.3.2
-django-redis>=5.4.0
+redis>=6.2.0
+hiredis>=3.2.1
+django-redis>=6.0.0
 {%- endif %}
 {%- if cookiecutter.use_restframework == 'y' %}
-djangorestframework>=3.15.2,<3.16
-django-cors-headers>=4.4.0
-djangorestframework-simplejwt>=5.3.1
+djangorestframework>=3.16.0,<3.17
+django-cors-headers>=4.7.0
+djangorestframework-simplejwt>=5.5.0
 drf-spectacular
 {%- endif %}
-django-storages>=1.14.3
-django-waffle>=4.1.0
+django-storages>=1.14.6
+django-waffle>=5.0.0
 django-widget-tweaks>=1.5.0
-gunicorn>=22.0.0
+gunicorn>=23.0.0
 libgravatar>=1.0.4
-pillow>=10.3.0
-psycopg2-binary>=2.9.9
+pillow>=11.2.1
+psycopg[binary]>=3.2.9
 python-decouple>=3.8

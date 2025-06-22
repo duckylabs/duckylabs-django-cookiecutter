@@ -7,19 +7,16 @@
     "version": "0.1.0",
     "timezone": "America/Mexico_City",
     "python_version": [
+        "3.13",
         "3.12",
-        "3.11",
-        "3.10",
-        "3.9"
+        "3.11"
     ],
     "postgresql_version": [
+        "17",
         "16",
         "15",
         "14",
-        "13",
-        "12",
-        "11",
-        "10"
+        "13"
     ],
     "django_running_port": "8000",
     "nginx_running_port": "8888",

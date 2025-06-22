@@ -151,10 +151,15 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 LANGUAGE_CODE = "es-MX"
+
 TIME_ZONE = "{{cookiecutter.timezone}}"
+
 USE_I18N = True
+
 USE_TZ = True
+
 DATE_FORMAT = "d-m-Y"
+
 LANGUAGES = [
     ("en", _("English")),
     ("es-MX", _("Spanish")),
@@ -170,6 +175,7 @@ LOCALE_PATHS = [
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 STATIC_URL = decouple_config("DJANGO_STATIC_URL", default="static/")
+
 # https://docs.djangoproject.com/en/5.0/ref/settings/#static-root
 STATIC_ROOT = "staticfiles/"
 
@@ -194,7 +200,9 @@ ADMIN_URL = "{{cookiecutter.project_slug}}admin/"
 # ------------------------------------------------------------------------------
 # Django Admin URL.
 LOGIN_REDIRECT_URL = "/"
+
 LOGOUT_REDIRECT_URL = "/"
+
 # TODO:
 #LOGIN_URL = "accounts:login"
 
@@ -203,10 +211,15 @@ LOGOUT_REDIRECT_URL = "/"
 # AWS Settings
 # ------------------------------------------------------------------------------
 AWS_ACCESS_KEY_ID = decouple.config("AWS_ACCESS_KEY_ID")
+
 AWS_SECRET_ACCESS_KEY = decouple.config("AWS_SECRET_ACCESS_KEY")
+
 AWS_STORAGE_BUCKET_NAME = decouple.config("AWS_STORAGE_BUCKET_NAME")
+
 AWS_DEFAULT_ACL = "public-read"
+
 AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
 # s3 public media settings
@@ -217,6 +230,7 @@ STORAGES = {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
+
 PUBLIC_MEDIA_LOCATION = "media"
 
 
@@ -224,10 +238,12 @@ PUBLIC_MEDIA_LOCATION = "media"
 # ------------------------------------------------------------------------------
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
 {% else %}
+
 # Media Settings
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/5.0/ref/settings/#media-root
 MEDIA_ROOT = "media"
+
 # https://docs.djangoproject.com/en/5.0/ref/settings/#media-url
 MEDIA_URL = "/media/"
 {%- endif %}
@@ -248,6 +264,7 @@ NOTEBOOK_ARGUMENTS = [
     "--NotebookApp.password",
     "",
 ]
+
 IPYTHON_KERNEL_DISPLAY_NAME = "Django Kernel"
 
 
@@ -275,12 +292,19 @@ CACHES = {
 # Email Settings
 # ------------------------------------------------------------------------------
 EMAIL_HOST = decouple_config("DJANGO_EMAIL_HOST", default="localhost")
+
 EMAIL_PORT = decouple_config("DJANGO_EMAIL_PORT", default=25, cast=int)
+
 EMAIL_HOST_PASSWORD = decouple_config("DJANGO_EMAIL_HOST_PASSWORD", default="")
+
 EMAIL_HOST_USER = decouple_config("DJANGO_EMAIL_HOST_USER", default="")
+
 EMAIL_USE_TLS = decouple_config("DJANGO_EMAIL_USE_TLS", default=False, cast=bool)
+
 EMAIL_USE_SSL = decouple_config("DJANGO_EMAIL_USE_SSL", default=False, cast=bool)
+
 EMAIL_SUBJECT_PREFIX = decouple_config("DJANGO_EMAIL_SUBJECT_PREFIX", default="")
+
 DEFAULT_FROM_EMAIL = decouple.config(
     "DJANGO_DEFAULT_FROM_EMAIL", default="no-reply@admin.mx"
 )
@@ -289,11 +313,14 @@ DEFAULT_FROM_EMAIL = decouple.config(
 # Recaptcha settings
 # ------------------------------------------------------------------------------
 RECAPTCHA_PUBLIC_KEY = decouple_config("RECAPTCHA_PUBLIC_KEY")
+
 RECAPTCHA_PRIVATE_KEY = decouple_config("RECAPTCHA_PRIVATE_KEY")
+
 RECAPTCHA_DOMAIN = decouple_config("RECAPTCHA_DOMAIN")
 {%- endif %}
 
 {% if cookiecutter.use_restframework == "y" %}
+
 # Restframework CORS settings
 # ------------------------------------------------------------------------------
 CORS_ALLOWED_ORIGINS = [

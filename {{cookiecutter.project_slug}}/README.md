@@ -11,6 +11,8 @@ bussines logic and non coding related should be found in Notion.
 
 ### Table of contents
 
+- [{{cookiecutter.project\_name}}](#cookiecutterproject_name)
+    - [Table of contents](#table-of-contents)
 - [Required tools](#required-tools)
 - [Setup development environment](#setup-development-environment)
 - [Other useful make commands](#other-useful-make-commands)
@@ -18,14 +20,16 @@ bussines logic and non coding related should be found in Notion.
 - [List of defined services in docker-compose.yml](#list-of-defined-services-in-docker-composeyml)
     - [`webserver`](#webserver)
     - [`backend`](#backend)
-    - [`database`](#database)
-    - [`jupyterlab`](#jupyterlab)
-    - [`redis`](#redis)
+    - [`jupyterlab`:](#jupyterlab)
     - [`mailhog`](#mailhog)
+    - [`database`](#database)
+    - [`redis`](#redis)
     - [`rabbitmq`](#rabbitmq)
     - [`celery-flower`](#celery-flower)
+    - [`celery-beat`](#celery-beat)
     - [`celery-worker`](#celery-worker)
     - [`celery-worker-low-priority`](#celery-worker-low-priority)
+    - [`celery-worker-high-priority`](#celery-worker-high-priority)
 - [Structuring Tests](#structuring-tests)
 - [Semantic Commit Messages](#semantic-commit-messages)
   - [Examples](#examples)
@@ -57,7 +61,6 @@ make django migrations and other stuffs.
 
     To generate the requirements text files, run the next commands:
 
-        make compile-rev-requirements
         make compile-requirements
 
 
