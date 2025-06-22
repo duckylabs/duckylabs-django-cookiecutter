@@ -11,7 +11,7 @@ bussines logic and non coding related should be found in Notion.
 
 ### Table of contents
 
-- [{{cookiecutter.project\_name}}](#cookiecutterproject_name)
+- [{{cookiecutter.project_name}}](#cookiecutterproject_name)
     - [Table of contents](#table-of-contents)
 - [Required tools](#required-tools)
 - [Setup development environment](#setup-development-environment)
