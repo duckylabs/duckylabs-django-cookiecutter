@@ -29,7 +29,7 @@ run)
   python -Xfrozen_modules=off manage.py runserver 0.0.0.0:{{cookiecutter.django_running_port}} "$@"
 ;;
 test)
-  python -m pytest --config-file=../pyporject.toml -v -l --failed-first "$@"
+  python -m pytest --config-file=../pyproject.toml -v -l --failed-first "$@"
 ;;
 coverage)
   set +euo pipefail
