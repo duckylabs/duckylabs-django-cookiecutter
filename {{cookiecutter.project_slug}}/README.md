@@ -22,7 +22,7 @@ bussines logic and non coding related should be found in Notion.
     - [`webserver`](#webserver)
     - [`backend`](#backend)
     - [`jupyterlab`:](#jupyterlab)
-    - [`mailhog`](#mailhog)
+    - [`mailpit`](#mailpit)
     - [`database`](#database)
     - [`redis`](#redis)
     - [`rabbitmq`](#rabbitmq)
@@ -177,7 +177,7 @@ Jupyterlab with django framework preloaded: [http://localhost:8001](http://local
   - Exposed port: `8001`
 
 
-### `mailhog`
+### `mailpit`
 Email development server: [http://localhost:8002](http://localhost:8002)
   - Docker internal ports:
     - `1025`: SMTP server

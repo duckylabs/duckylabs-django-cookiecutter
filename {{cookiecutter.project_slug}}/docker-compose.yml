@@ -34,8 +34,8 @@ services:
         condition: service_healthy
       jupyterlab:
         condition: service_started
-      {%- if cookiecutter.use_mailhog == 'y' %}
-      mailhog:
+      {%- if cookiecutter.use_mailpit == 'y' %}
+      mailpit:
         condition: service_started
       {%- endif %}
       celery-worker:
@@ -71,8 +71,8 @@ services:
         condition: service_healthy
       jupyterlab:
         condition: service_started
-      {%- if cookiecutter.use_mailhog == 'y' %}
-      mailhog:
+      {%- if cookiecutter.use_mailpit == 'y' %}
+      mailpit:
         condition: service_started
       {%- endif %}
       {% if cookiecutter.use_celery == 'y' -%}
@@ -128,8 +128,8 @@ services:
       {%- endif %}
       database:
         condition: service_healthy
-      {%- if cookiecutter.use_mailhog == 'y' %}
-      mailhog:
+      {%- if cookiecutter.use_mailpit == 'y' %}
+      mailpit:
         condition: service_started
       {%- endif %}
       {% if cookiecutter.use_celery == 'y' -%}
@@ -160,14 +160,15 @@ services:
       timeout: 30s
       retries: 50
   {%- endif %}
-  {% if cookiecutter.use_mailhog == 'y' %}
-  mailhog:
-    image: mailhog/mailhog
-    container_name: {{cookiecutter.project_slug}}-mailhog
-    command: -jim-accept=0.8 -jim-disconnect=0.2
+  {% if cookiecutter.use_mailpit == 'y' %}
+  mailpit:
+    image: axllent/mailpit
+    container_name: {{cookiecutter.project_slug}}-mailpit
     ports:
       - '1025:1025' # smtp server
       - '8002:8025' # web ui
+    environment:
+      - MP_ENABLE_CHAOS=true
   {%- endif %}
   {% if cookiecutter.use_celery == 'y' %}
   rabbitmq:

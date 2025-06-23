@@ -20,7 +20,7 @@
     ],
     "django_running_port": "8000",
     "nginx_running_port": "8888",
-    "use_mailhog": "y",
+    "use_mailpit": "y",
     "use_restframework": "y",
     "use_debugpy": "y",
     "use_waffle_flags": "y",
