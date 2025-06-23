@@ -15,6 +15,7 @@ bussines logic and non coding related should be found in Notion.
     - [Table of contents](#table-of-contents)
 - [Required tools](#required-tools)
 - [Setup development environment](#setup-development-environment)
+  - [Default User](#default-user)
 - [Other useful make commands](#other-useful-make-commands)
 - [*Dev* command inside container](#dev-command-inside-container)
 - [List of defined services in docker-compose.yml](#list-of-defined-services-in-docker-composeyml)
@@ -115,10 +116,19 @@ you can run the command:
 
     docker-compose run --service-ports --rm backend bash
 
+
+## Default User
+
+If you prefer, you can use the `init-setup` make command to do all the steps at once. This process creates a default django admin user:
+
+- Username: `admin@admin.com`
+- Password: `adminpass`
 ---
 
 # Other useful make commands
 
+- `make install-local-dependencies`: Install pre-commit and pip-tools. Also initialize the pre-commit hooks.
+- `make build`: Build the Docker image with the app.
 - `make up` : Run the backend and needed services with docker compose.
 - `make shell` : Run the backend docker image and enter to the container shell to ru `dev` commands.
 - `make init-setup`: Run the `build`, `makemigrations` and `migrate` commands and creates an initial superuser.
